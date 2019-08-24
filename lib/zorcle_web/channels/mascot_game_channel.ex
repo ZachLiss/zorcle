@@ -17,4 +17,18 @@ defmodule ZorcleWeb.MascotGameChannel do
     IO.puts("PONG: ")
     {:reply, :ok, socket}
   end
+
+  def handle_in("start_game", _params, socket) do
+    # do whatever stuff we need to do to start the game
+    # broadcast start game
+    broadcast!(socket, "start_game", %{})
+    {:reply, :ok, socket}
+  end
+
+  def handle_in("end_game", _params, socket) do
+    # do whatever stuff we need to do to end the game
+    # broadcast end game
+    broadcast!(socket, "end_game", %{})
+    {:reply, :ok, socket}
+  end
 end

@@ -35,5 +35,8 @@
 </section>
 
 <span id="mascot-game">
-	<button id="start-game-button">Start Game</button>
+	<div>
+		<button id="start-game-button">Start Game</button>
+		<button id="end-game-button" disabled>End Game</button>
+	</div>
 </span>
