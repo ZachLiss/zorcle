@@ -11,25 +11,10 @@ let MascotGame = {
 		const mascotGameChannel = socket.channel('mascot_game:' + mascotGameId);
 		const startButton = document.querySelector('#start-game-button');
 		const endButton = document.querySelector('#end-game-button');
-
-		mascotGameChannel.on('ping', ({count}) => {
-			console.log("PING", count)
-			mascotGameChannel.push('pong', { count }).receive("error", e => console.log(e))
-		});
-
-		mascotGameChannel.on('start_game', () => {
-			console.log('starting the game')
-
-			startButton.disabled = true;
-			endButton.disabled = false;
-		})
-
-		mascotGameChannel.on('end_game', () => {
-			console.log('ending the game')
-
-			startButton.disabled = false;
-			endButton.disabled = true;
-		})
+		const gameForm = document.querySelector('#game-form');
+		const schoolValue = document.querySelector('#school-value');
+		const submitButton = document.querySelector('#submit-button');
+		const mascotInput = document.querySelector('#mascot-input');
 
 		startButton.addEventListener("click", e => {
 			// start the game
@@ -41,10 +26,42 @@ let MascotGame = {
 			mascotGameChannel.push('end_game');
 		});
 
+		submitButton.addEventListener("click", e => {
+			// submit the game
+			mascotGameChannel.push('submit_answer', { mascot: mascotInput.value })
+				.receive("ok", () => {
+					console.log('you did it!!')
+				})
+				.receive("incorrect", () => {
+					console.log('incorrect yo')
+				});
+		});
 
+		mascotGameChannel.on('ping', ({count}) => {
+			console.log("PING", count)
+			mascotGameChannel.push('pong', { count }).receive("error", e => console.log(e))
+		});
 
-		console.log('trying to join')
+		mascotGameChannel.on('start_game', () => {
+			console.log('starting the game')
 
+			startButton.disabled = true;
+			endButton.disabled = false;
+			gameForm.style.display = "block";
+		});
+
+		mascotGameChannel.on('end_game', () => {
+			console.log('ending the game')
+
+			startButton.disabled = false;
+			endButton.disabled = true;
+			gameForm.style.display = "none";
+		});
+
+		mascotGameChannel.on('new_question', ({school}) => {
+			console.log('SCHOOL: ' + school);
+			schoolValue.innerHTML = school;
+		});
 		// TODO join the game channel
 		mascotGameChannel.join()
 			.receive('ok', resp => {

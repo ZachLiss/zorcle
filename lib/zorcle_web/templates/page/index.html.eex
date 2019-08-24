@@ -39,4 +39,16 @@
 		<button id="start-game-button">Start Game</button>
 		<button id="end-game-button" disabled>End Game</button>
 	</div>
+	<section>
+		<div id="game-form" style="display: none">
+			<div>
+				School: <span id="school-value"></span>
+			</div>
+			<div>
+				Mascot: <input id="mascot-input" />
+			</div>
+
+			<button id="submit-button">Submit</button>
+		</section>
+	</div>
 </span>

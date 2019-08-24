@@ -22,6 +22,15 @@ defmodule ZorcleWeb.MascotGameChannel do
     # do whatever stuff we need to do to start the game
     # broadcast start game
     broadcast!(socket, "start_game", %{})
+
+    # grab first question & broadcast it
+    # do a socket assign?
+    socket = assign(socket, :current_school, "University of Pittsburgh")
+
+    broadcast!(socket, "new_question", %{
+      school: "University of Pittsburgh"
+    })
+
     {:reply, :ok, socket}
   end
 
@@ -30,5 +39,15 @@ defmodule ZorcleWeb.MascotGameChannel do
     # broadcast end game
     broadcast!(socket, "end_game", %{})
     {:reply, :ok, socket}
+  end
+
+  def handle_in("submit_answer", %{"mascot" => mascot}, socket) do
+    IO.puts(socket.assigns[:current_school])
+    IO.puts("mascot: #{mascot}")
+
+    case mascot do
+      "Panthers" -> {:reply, :ok, socket}
+      _ -> {:reply, :incorrect, socket}
+    end
   end
 end
