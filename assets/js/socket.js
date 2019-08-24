@@ -61,7 +61,7 @@ import {Socket} from "phoenix"
 //   .receive("error", resp => { console.log("Unable to join", resp) })
 
 const socket = new Socket("/socket", {
-	params: {},
+	params: {token: window.userToken},
 	logger: (kind, msg, data) => { console.log(`${kind}: ${msg}`, data)}
 })
 

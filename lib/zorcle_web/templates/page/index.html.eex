@@ -34,4 +34,6 @@
   </article>
 </section>
 
-<span id="mascot-game"></span>
+<span id="mascot-game">
+	<button id="start-game-button">Start Game</button>
+</span>
