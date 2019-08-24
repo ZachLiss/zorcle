@@ -3,6 +3,7 @@ defmodule ZorcleWeb.UserSocket do
 
   ## Channels
   # channel "room:*", ZorcleWeb.RoomChannel
+  channel("mascot_game:*", ZorcleWeb.MascotGameChannel)
 
   # Socket params are passed from the client and can
   # be used to verify and authenticate a user. After
