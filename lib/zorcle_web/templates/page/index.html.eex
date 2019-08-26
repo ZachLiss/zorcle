@@ -11,10 +11,14 @@
 	<section>
 		<div id="game-form" style="display: none">
 			<div>
+				Score: <span id="score-value">0</span>
+			</div>
+			<div>
 				School: <span id="school-value"></span>
 			</div>
 			<div>
 				Mascot: <input id="mascot-input" />
+				<span id="feedback"></span>
 			</div>
 
 			<button id="submit-button">Submit</button>

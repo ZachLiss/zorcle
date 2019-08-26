@@ -15,6 +15,8 @@ let MascotGame = {
 		const schoolValue = document.querySelector('#school-value');
 		const submitButton = document.querySelector('#submit-button');
 		const mascotInput = document.querySelector('#mascot-input');
+		const scoreValue = document.querySelector('#score-value');
+		const feedback = document.querySelector('#feedback');
 
 		startButton.addEventListener("click", e => {
 			// start the game
@@ -30,10 +32,13 @@ let MascotGame = {
 			// submit the game
 			mascotGameChannel.push('submit_answer', { mascot: mascotInput.value })
 				.receive("ok", () => {
-					console.log('you did it!!')
+					feedback.innerHTML = 'Correct!';
+					mascotInput.value = '';
+					setTimeout(() => feedback.innerHTML = '', 2000)
 				})
 				.receive("incorrect", () => {
-					console.log('incorrect yo')
+					feedback.innerHTML = 'NOPE YOU IDIOT';
+					setTimeout(() => feedback.innerHTML = '', 2000)
 				});
 		});
 
@@ -62,6 +67,11 @@ let MascotGame = {
 			console.log('SCHOOL: ' + school);
 			schoolValue.innerHTML = school;
 		});
+
+		mascotGameChannel.on('correct_answer', ({score}) => {
+			console.log('SCORE: ' + score)
+			scoreValue.innerHTML = score;
+		})
 		// TODO join the game channel
 		mascotGameChannel.join()
 			.receive('ok', resp => {

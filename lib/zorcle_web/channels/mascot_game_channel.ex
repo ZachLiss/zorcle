@@ -27,12 +27,13 @@ defmodule ZorcleWeb.MascotGameChannel do
 
     # grab first question & broadcast it
     # do a socket assign?
-    current_question = MascotGame.get_random_question()
-    socket = assign(socket, :current_question, current_question)
+    socket = broadcast_new_question(socket)
+    # current_question = MascotGame.get_random_question()
+    # socket = assign(socket, :current_question, current_question)
 
-    broadcast!(socket, "new_question", %{
-      school: current_question.school
-    })
+    # broadcast!(socket, "new_question", %{
+    #   school: current_question.school
+    # })
 
     {:reply, :ok, socket}
   end
@@ -49,7 +50,16 @@ defmodule ZorcleWeb.MascotGameChannel do
 
     case user_answer do
       ^correct_answer ->
-        # broadcast next question
+        socket = broadcast_new_question(socket)
+
+        # update score in socket
+        score = socket.assigns[:score] || 0
+        socket = assign(socket, :score, score + 1)
+
+        broadcast!(socket, "correct_answer", %{
+          score: socket.assigns[:score]
+        })
+
         {:reply, :ok, socket}
 
       _ ->
@@ -66,5 +76,7 @@ defmodule ZorcleWeb.MascotGameChannel do
     broadcast!(socket, "new_question", %{
       school: current_question.school
     })
+
+    socket
   end
 end
