@@ -1,6 +1,8 @@
 defmodule ZorcleWeb.MascotGameChannel do
   use ZorcleWeb, :channel
 
+  alias Zorcle.MascotGame
+
   def join("mascot_game:" <> mascot_game_id, _params, socket) do
     # :timer.send_interval(5_000, :ping)
     {:ok, assign(socket, :mascot_game_id, String.to_integer(mascot_game_id))}
@@ -25,10 +27,11 @@ defmodule ZorcleWeb.MascotGameChannel do
 
     # grab first question & broadcast it
     # do a socket assign?
-    socket = assign(socket, :current_school, "University of Pittsburgh")
+    current_question = MascotGame.get_random_question()
+    socket = assign(socket, :current_question, current_question)
 
     broadcast!(socket, "new_question", %{
-      school: "University of Pittsburgh"
+      school: current_question.school
     })
 
     {:reply, :ok, socket}
@@ -41,13 +44,27 @@ defmodule ZorcleWeb.MascotGameChannel do
     {:reply, :ok, socket}
   end
 
-  def handle_in("submit_answer", %{"mascot" => mascot}, socket) do
-    IO.puts(socket.assigns[:current_school])
-    IO.puts("mascot: #{mascot}")
+  def handle_in("submit_answer", %{"mascot" => user_answer}, socket) do
+    correct_answer = socket.assigns[:current_question].mascot
 
-    case mascot do
-      "Panthers" -> {:reply, :ok, socket}
-      _ -> {:reply, :incorrect, socket}
+    case user_answer do
+      ^correct_answer ->
+        # broadcast next question
+        {:reply, :ok, socket}
+
+      _ ->
+        {:reply, :incorrect, socket}
     end
+  end
+
+  def broadcast_new_question(socket) do
+    # grab first question & broadcast it
+    # do a socket assign?
+    current_question = MascotGame.get_random_question()
+    socket = assign(socket, :current_question, current_question)
+
+    broadcast!(socket, "new_question", %{
+      school: current_question.school
+    })
   end
 end
