@@ -2,6 +2,8 @@ let MascotGame = {
 	init(socket, element) {
 		if (!element) { return }
 
+		// currently hard coding this id
+		// ideas around making this more flexible
 		const mascotGameId = 1;
 		socket.connect();
 		this.onReady(mascotGameId, socket);
@@ -73,6 +75,7 @@ let MascotGame = {
 			scoreValue.innerHTML = score;
 		})
 		// TODO join the game channel
+		// join existing game or start a new one
 		mascotGameChannel.join()
 			.receive('ok', resp => {
 				console.log('joined the mascot game channel', resp)

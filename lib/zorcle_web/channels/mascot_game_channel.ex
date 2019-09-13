@@ -1,3 +1,12 @@
+"""
+This is currently living on the index page.
+
+- need to migrate this to a different "mascot-game" page
+
+- how to keep track of score per user, instead of total score
+  - soooo how to user / socket specific connection data? is that a thing?
+"""
+
 defmodule ZorcleWeb.MascotGameChannel do
   use ZorcleWeb, :channel
 
@@ -60,6 +69,7 @@ defmodule ZorcleWeb.MascotGameChannel do
           score: socket.assigns[:score]
         })
 
+        # instead of broadcast out the new score, reply to this process with the user's new score and broadcast_new_question
         {:reply, :ok, socket}
 
       _ ->
