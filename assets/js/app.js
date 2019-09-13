@@ -9,6 +9,11 @@ import css from "../css/app.css"
 //
 // Import dependencies
 //
+import LiveSocket from "phoenix_live_view"
+
+let liveSocket = new LiveSocket("/live")
+liveSocket.connect()
+
 import "phoenix_html"
 
 // Import local files

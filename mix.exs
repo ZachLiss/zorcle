@@ -40,6 +40,7 @@ defmodule Zorcle.MixProject do
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 2.11"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:phoenix_live_view, github: "phoenixframework/phoenix_live_view", ref: "b44da5e"},
       {:gettext, "~> 0.11"},
       {:jason, "~> 1.0"},
       {:pbkdf2_elixir, "~> 1.0"},

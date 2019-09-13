@@ -15,7 +15,9 @@ config :zorcle, ZorcleWeb.Endpoint,
   url: [host: "localhost"],
   secret_key_base: "VMmOteUOnymDiRa9lRmsUkWi65+7FN94FB/VD7dKYaVuNcL/XMiyGxzY6L6k/zJP",
   render_errors: [view: ZorcleWeb.ErrorView, accepts: ~w(html json)],
-  pubsub: [name: Zorcle.PubSub, adapter: Phoenix.PubSub.PG2]
+  pubsub: [name: Zorcle.PubSub, adapter: Phoenix.PubSub.PG2],
+  # required config option for live_view to work
+  live_view: [signing_salt: "G/seVKru5aw1os9FWdnQRO4a+sZ210+7"]
 
 # Configures Elixir's Logger
 config :logger, :console,

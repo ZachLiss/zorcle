@@ -23,6 +23,7 @@ defmodule ZorcleWeb do
 
       import Plug.Conn
       import ZorcleWeb.Gettext
+      import Phoenix.LiveView.Controller, only: [live_render: 3]
       alias ZorcleWeb.Router.Helpers, as: Routes
     end
   end
@@ -39,6 +40,9 @@ defmodule ZorcleWeb do
       # Use all HTML functionality (forms, tags, etc)
       use Phoenix.HTML
 
+      # useful liveview imports
+      import Phoenix.LiveView, only: [live_render: 2, live_render: 3]
+
       import ZorcleWeb.ErrorHelpers
       import ZorcleWeb.Gettext
       alias ZorcleWeb.Router.Helpers, as: Routes
@@ -50,6 +54,7 @@ defmodule ZorcleWeb do
       use Phoenix.Router
       import Plug.Conn
       import Phoenix.Controller
+      import Phoenix.LiveView.Router
     end
   end
 
