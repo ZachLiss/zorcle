@@ -1,5 +1,5 @@
 <div class="fullscreen">
-	<%= form_for :user, "#", [], fn f -> %>
+	<%= form_for :user, "#", [phx_submit: :join], fn f -> %>
 	 <%= Components.simple_text_field f , :name, place: "Enter a name" %>
 	 <%= Components.simple_text_field f , :email, place: "Enter an email" %>
 
