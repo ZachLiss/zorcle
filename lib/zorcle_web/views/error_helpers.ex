@@ -15,6 +15,13 @@ defmodule ZorcleWeb.ErrorHelpers do
   end
 
   @doc """
+  Renders the errors for a field on a form.
+  """
+  def field_errors(form, field) do
+    Enum.map(Keyword.get_values(form.errors, field), &translate_error/1)
+  end
+
+  @doc """
   Translates an error message using gettext.
   """
   def translate_error({msg, opts}) do

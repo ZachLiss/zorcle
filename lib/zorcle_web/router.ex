@@ -18,7 +18,7 @@ defmodule ZorcleWeb.Router do
   scope "/", ZorcleWeb do
     pipe_through(:browser)
 
-    live("/", MascotGameLive)
+    live("/", ConnectLive)
     # get("/", PageController, :index)
     resources("/users", UserController, only: [:index, :show, :new, :create])
   end

@@ -1,0 +1,10 @@
+<div class="fullscreen">
+	<%= form_for :user, "#", [], fn f -> %>
+	 <%= Components.simple_text_field f , :name, place: "Enter a name" %>
+	 <%= Components.simple_text_field f , :email, place: "Enter an email" %>
+
+	 <div>
+		 <%= submit "Join", class: "button" %>
+		</div>
+	<% end %>
+</div>
