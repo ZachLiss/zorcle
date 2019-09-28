@@ -2,6 +2,7 @@ defmodule ZorcleWeb.ConnectLive do
   use(Phoenix.LiveView)
   import Ecto.Changeset
 
+  alias Zorcle.MagicLinks
   alias ZorcleWeb.MascotGameView
 
   def mount(_params, socket) do
@@ -29,8 +30,9 @@ defmodule ZorcleWeb.ConnectLive do
     |> join_changeset()
     |> Map.put(:action, :errors)
     |> case do
-      %{valid?: true, changes: %{name: name, email: email}} ->
-        {:noreply, assign(socket, name: name, email: email)}
+      %{valid?: true, changes: %{name: name, email: email} = user} ->
+        token = MagicLinks.create_token(user)
+        {:noreply, redirect(socket, to: "/session/#{token}")}
 
       %{valid?: false} = changeset ->
         {:noreply, assign(socket, :changeset, changeset)}

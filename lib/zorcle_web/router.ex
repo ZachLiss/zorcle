@@ -18,8 +18,10 @@ defmodule ZorcleWeb.Router do
   scope "/", ZorcleWeb do
     pipe_through(:browser)
 
-    live("/", ConnectLive)
-    # get("/", PageController, :index)
+    # live("/", ConnectLive)
+    get("/", PageController, :index)
+    get("/session/:token", PageController, :add_session)
+    get("/logout", PageController, :drop_session)
     resources("/users", UserController, only: [:index, :show, :new, :create])
   end
 
