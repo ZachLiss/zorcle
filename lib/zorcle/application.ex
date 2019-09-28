@@ -11,7 +11,8 @@ defmodule Zorcle.Application do
       # Start the Ecto repository
       Zorcle.Repo,
       # Start the endpoint when the application starts
-      ZorcleWeb.Endpoint
+      ZorcleWeb.Endpoint,
+      Zorcle.MagicLinks
       # Starts a worker by calling: Zorcle.Worker.start_link(arg)
       # {Zorcle.Worker, arg},
     ]
