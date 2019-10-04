@@ -1,0 +1,31 @@
+<h1>Welcome, <%= @user.name %>, to the Mascot Game</h1>
+<!-- TODO this whole form should communicate through lv -->
+<section id="mascot-game">
+	<div>
+		<button phx-click="toggle-game">
+			<%= case(@game_started) do %>
+					<% true -> %> End Game
+					<% false -> %> Start Game
+			<% end %>
+		</button>
+	</div>
+	<%= if @current_question_school do %>
+		<section>
+			<div>
+				Score: <span id="score-value"><%= @user_score %></span>
+			</div>
+			<%= f = form_for :game_form, "#", [phx_submit: :answer_question] %>
+				<div>
+					School: <%= @current_question_school %>
+				</div>
+
+				<div>
+					Mascot: <%= text_input f, :mascot %>
+					<span id="feedback"></span>
+				</div>
+
+				<%= submit "Submit" %>
+			</form>
+		</section>
+	<% end %>
+</section>

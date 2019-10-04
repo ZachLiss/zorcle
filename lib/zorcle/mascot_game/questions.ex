@@ -354,4 +354,8 @@ defmodule Zorcle.MascotGame.Questions do
       %{school: "Youngstown State University", mascot: "Penguins"}
     ]
   end
+
+  def get_question_by_school(school) do
+    Enum.filter(get_questions(), fn q -> q.school == school end)
+  end
 end

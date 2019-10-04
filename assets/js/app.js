@@ -20,6 +20,6 @@ import "phoenix_html"
 //
 // Local files can be imported directly using relative paths, for example:
 import socket from "./socket"
-import MascotGame from "./mascot-game"
+// import MascotGame from "./mascot-game"
 
-MascotGame.init(socket, document.querySelector("#mascot-game"))
+// MascotGame.init(socket, document.querySelector("#mascot-game"))
