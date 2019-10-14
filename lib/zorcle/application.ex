@@ -12,9 +12,10 @@ defmodule Zorcle.Application do
       Zorcle.Repo,
       # Start the endpoint when the application starts
       ZorcleWeb.Endpoint,
-      Zorcle.MagicLinks
+      Zorcle.MagicLinks,
       # Starts a worker by calling: Zorcle.Worker.start_link(arg)
-      # {Zorcle.Worker, arg},
+      {Zorcle.MascotGame, :ok},
+      {Phoenix.PubSub.PG2, name: Zorcle.InternalPubSub, adapter: Phoenix.PubSub.PG2}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

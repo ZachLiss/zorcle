@@ -9,12 +9,17 @@ defmodule ZorcleWeb.MascotGameLive do
 
   # called when the liveview is connected to
   def mount(%{user: user}, socket) do
+    if connected?(socket), do: Phoenix.PubSub.subscribe(Zorcle.InternalPubSub, "game")
+
+    game_state = GenServer.call(MascotGame, {:user_join, user.name})
+
     assigns = [
       user: user,
       game_started: false,
       current_question_school: nil,
       user_score: 0,
-      mascot_guess: ''
+      mascot_guess: '',
+      game_state: game_state
     ]
 
     {:ok, assign(socket, assigns)}
@@ -28,11 +33,16 @@ defmodule ZorcleWeb.MascotGameLive do
   def handle_event("toggle-game", _, socket) do
     # start with our state -> start the game -> grab a question -> return
     case(socket.assigns.game_started) do
+      # GenServer.call(Zorcle.MascotGame, {:user_join, "my_name"})
       false ->
         socket =
           socket
           |> update(:game_started, &(!&1))
           |> prepare_new_question
+
+        genserver_state = GenServer.call(MascotGame, {:start_game})
+
+        IO.inspect("genserver_state: #{genserver_state}")
 
         {:noreply, socket}
 
