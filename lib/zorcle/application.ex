@@ -15,7 +15,7 @@ defmodule Zorcle.Application do
       Zorcle.MagicLinks,
       # Starts a worker by calling: Zorcle.Worker.start_link(arg)
       {Zorcle.MascotGame, :ok},
-      {Phoenix.PubSub.PG2, name: Zorcle.InternalPubSub, adapter: Phoenix.PubSub.PG2}
+      {Phoenix.PubSub.PG2, name: Zorcle.InternalPubSub}
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

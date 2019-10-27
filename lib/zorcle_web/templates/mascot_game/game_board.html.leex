@@ -10,13 +10,21 @@
 		</button>
 	</div>
 	<%= if @current_question_school do %>
+		<div class="scoreboard">
+			<%= for {user_name, score} <- @game_state.users do %>
+			<div>
+				<%= user_name %>: <%= score %>
+			</div>
+			<% end %>
+		</div>
+
 		<section>
 			<div>
 				Score: <span id="score-value"><%= @user_score %></span>
 			</div>
 			<%= f = form_for :game_form, "#", [phx_submit: :answer_question] %>
 				<div>
-					School: <%= @current_question_school %>
+					School: <%= @game_state.current_question_school %>
 				</div>
 
 				<div>
