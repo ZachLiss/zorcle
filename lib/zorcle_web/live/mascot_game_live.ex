@@ -51,6 +51,7 @@ defmodule ZorcleWeb.MascotGameLive do
         {:noreply, socket}
 
       _ ->
+        # TODO reset the game... probably a MascotGame.end_game() type of thing
         socket =
           socket
           |> assign(
@@ -66,32 +67,18 @@ defmodule ZorcleWeb.MascotGameLive do
     end
   end
 
-  def handle_event(
-        "answer_question",
-        %{"game_form" => %{"mascot" => guess}},
-        %{assigns: %{current_question_school: correct_answer}} = socket
-      ) do
+  def handle_event("answer_question", %{"game_form" => %{"mascot" => guess}}, socket) do
     # TODO make a call to answer_question on MascotGame
     # if correct update things and update game state
     # if incorrect pass back wrong answer to to provide feedback
-    case MascotGame.check_answer(correct_answer, guess) do
+    case MascotGame.check_answer(guess, socket.assigns.user) do
       true ->
-        new_socket =
-          socket
-          |> prepare_new_question
-          |> update(:user_score, &(&1 + 1))
-
-        {:noreply, new_socket}
+        # noop for now, we'll add correct/incorrect UI feedback later
+        # also... what might be the best way to provide this feedback?
+        {:noreply, socket}
 
       _ ->
         {:noreply, socket}
     end
-  end
-
-  defp prepare_new_question(socket) do
-    # grab first question & broadcast it
-    # do a socket assign?
-    current_question = MascotGame.get_random_question()
-    assign(socket, :current_question_school, current_question.school)
   end
 end

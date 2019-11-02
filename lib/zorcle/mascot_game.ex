@@ -79,6 +79,38 @@ defmodule Zorcle.MascotGame do
     {:reply, game_state, state}
   end
 
+  def handle_call({:answer_question, guess, user_name}, _pid, state) do
+    IO.puts("Correct Answer: #{state.current_question.mascot}")
+
+    case(state.current_question.mascot == guess) do
+      true ->
+        state =
+          state
+          |> increase_score_for_user(user_name)
+          |> Map.put(:current_question, get_random_question())
+
+        Phoenix.PubSub.broadcast(
+          Zorcle.InternalPubSub,
+          "game",
+          {:update_game_state, state_for_lv(state)}
+        )
+
+        {:reply, :ok, state}
+
+      _ ->
+        {:reply, :incorrect, state}
+    end
+  end
+
+  defp increase_score_for_user(state, user_name) do
+    # TODO can this be improved by refactoring?
+    users =
+      state.users
+      |> Map.put(user_name, state.users[user_name] + 1)
+
+    Map.put(state, :users, users)
+  end
+
   defp state_for_lv(state) do
     # return some subset of the state from the GenServer
     %{
@@ -112,9 +144,8 @@ defmodule Zorcle.MascotGame do
     |> Enum.random()
   end
 
-  def check_answer(school, mascot) do
-    # what is better to return here?
-    [question_for_school] = Questions.get_question_by_school(school)
-    question_for_school.mascot == mascot
+  def check_answer(guess, user) do
+    IO.puts("User: #{user.name}")
+    is_correct = GenServer.call(__MODULE__, {:answer_question, guess, user.name})
   end
 end
