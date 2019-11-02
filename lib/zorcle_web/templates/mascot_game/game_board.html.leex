@@ -3,13 +3,13 @@
 <section id="mascot-game">
 	<div>
 		<button phx-click="toggle-game">
-			<%= case(@game_started) do %>
+			<%= case(@game_state.game_status != :not_started) do %>
 					<% true -> %> End Game
 					<% false -> %> Start Game
 			<% end %>
 		</button>
 	</div>
-	<%= if @current_question_school do %>
+	<%= if @game_state.current_question_school do %>
 		<div class="scoreboard">
 			<%= for {user_name, score} <- @game_state.users do %>
 			<div>

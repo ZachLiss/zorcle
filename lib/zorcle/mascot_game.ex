@@ -28,7 +28,7 @@ defmodule Zorcle.MascotGame do
 
     IO.puts("#{user_name} is joining the game")
     # calling Phoennix.PubSub.subscribe/3 with a pid is deprecated now
-    Phoenix.PubSub.subscribe(Zorcle.InternalPubSub, pid, "game")
+    # Phoenix.PubSub.subscribe(Zorcle.InternalPubSub, pid, "game")
     users = Map.put(users, user_name, 0)
     state = Map.put(state, :users, users)
 
@@ -94,6 +94,11 @@ defmodule Zorcle.MascotGame do
     GenServer.call(__MODULE__, {:user_join, name})
   end
 
+  def start_game() do
+    GenServer.call(__MODULE__, {:start_game})
+  end
+
+  # might not need this anymore since we can push state with our PubSub.broadcast
   def get_game_state do
     GenServer.call(__MODULE__, {:get_game_state})
   end
