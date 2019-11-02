@@ -40,11 +40,7 @@ defmodule Zorcle.MascotGame do
       game_status: state.game_status
     }
 
-    Phoenix.PubSub.broadcast(
-      Zorcle.InternalPubSub,
-      "game",
-      {:update_game_state, state_for_lv(state)}
-    )
+    broadcast_updated_game_state(state)
 
     # we may want to return a value, handle situations where users cannot join
     {:reply, game_state, state}
@@ -60,11 +56,8 @@ defmodule Zorcle.MascotGame do
       |> Map.put(:game_status, :started)
       |> Map.put(:current_question, get_random_question())
 
-    Phoenix.PubSub.broadcast(
-      Zorcle.InternalPubSub,
-      "game",
-      {:update_game_state, state_for_lv(state)}
-    )
+    # add this to pipeline?
+    broadcast_updated_game_state(state)
 
     {:reply, :ok, state}
   end
@@ -89,11 +82,8 @@ defmodule Zorcle.MascotGame do
           |> increase_score_for_user(user_name)
           |> Map.put(:current_question, get_random_question())
 
-        Phoenix.PubSub.broadcast(
-          Zorcle.InternalPubSub,
-          "game",
-          {:update_game_state, state_for_lv(state)}
-        )
+        # add this to pipeline?
+        broadcast_updated_game_state(state)
 
         {:reply, :ok, state}
 
@@ -109,6 +99,14 @@ defmodule Zorcle.MascotGame do
       |> Map.put(user_name, state.users[user_name] + 1)
 
     Map.put(state, :users, users)
+  end
+
+  defp broadcast_updated_game_state(state) do
+    Phoenix.PubSub.broadcast(
+      Zorcle.InternalPubSub,
+      "game",
+      {:update_game_state, state_for_lv(state)}
+    )
   end
 
   defp state_for_lv(state) do
