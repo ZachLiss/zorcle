@@ -11,16 +11,17 @@ defmodule Zorcle.MascotGame do
   end
 
   def init(_) do
-    # initial state setup
-    state = %{
+    {:ok, initial_state()}
+  end
+
+  defp initial_state do
+    %{
       users: %{},
       game_status: :not_started,
       # we'll think about how to represent the used questions state
       used_questions: %{},
       current_question: %{school: nil}
     }
-
-    {:ok, state}
   end
 
   def handle_call({:user_join, user_name}, {pid, _ref}, %{users: users} = state) do
@@ -57,6 +58,18 @@ defmodule Zorcle.MascotGame do
       |> Map.put(:current_question, get_random_question())
 
     # add this to pipeline?
+    broadcast_updated_game_state(state)
+
+    {:reply, :ok, state}
+  end
+
+  def handle_call({:end_game}, _pid, state) do
+    users_with_no_score = Map.new(state.users, fn {k, v} -> {k, 0} end)
+
+    state =
+      initial_state()
+      |> Map.put(:users, users_with_no_score)
+
     broadcast_updated_game_state(state)
 
     {:reply, :ok, state}
@@ -126,6 +139,11 @@ defmodule Zorcle.MascotGame do
 
   def start_game() do
     GenServer.call(__MODULE__, {:start_game})
+  end
+
+  def end_game() do
+    IO.puts("ending game")
+    GenServer.call(__MODULE__, {:end_game})
   end
 
   # might not need this anymore since we can push state with our PubSub.broadcast
