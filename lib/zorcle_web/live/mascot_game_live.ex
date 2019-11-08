@@ -37,9 +37,6 @@ defmodule ZorcleWeb.MascotGameLive do
 
   # called whenever there is a state change and delivers new html down to the client to be diffed and "DOM updatedededed"
   def render(assigns) do
-    IO.puts("==== rendering ====")
-    # IO.inspect(assigns)
-    IO.puts("===================")
     MascotGameView.render("game_board.html", assigns)
   end
 
@@ -62,9 +59,6 @@ defmodule ZorcleWeb.MascotGameLive do
   end
 
   def handle_event("answer_question", %{"game_form" => %{"mascot" => guess}}, socket) do
-    # TODO make a call to answer_question on MascotGame
-    # if correct update things and update game state
-    # if incorrect pass back wrong answer to to provide feedback
     case MascotGame.check_answer(guess, socket.assigns.user) do
       true ->
         # noop for now, we'll add correct/incorrect UI feedback later
@@ -72,6 +66,7 @@ defmodule ZorcleWeb.MascotGameLive do
         {:noreply, socket}
 
       _ ->
+        # TODO if incorrect pass back wrong answer to to provide feedback
         {:noreply, socket}
     end
   end

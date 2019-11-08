@@ -25,8 +25,6 @@ defmodule Zorcle.MascotGame do
   end
 
   def handle_call({:user_join, user_name}, {pid, _ref}, %{users: users} = state) do
-    # use the pid to make a call to Phoenix.PubSub.subscribe/3
-
     IO.puts("#{user_name} is joining the game")
     # calling Phoennix.PubSub.subscribe/3 with a pid is deprecated now
     # Phoenix.PubSub.subscribe(Zorcle.InternalPubSub, pid, "game")
@@ -95,7 +93,7 @@ defmodule Zorcle.MascotGame do
           |> increase_score_for_user(user_name)
           |> Map.put(:current_question, get_random_question())
 
-        # add this to pipeline?
+        # add this to pipeline? |> broadcast_updated_game_state() or |> broadcast_updated_game_state ?
         broadcast_updated_game_state(state)
 
         {:reply, :ok, state}
@@ -123,7 +121,7 @@ defmodule Zorcle.MascotGame do
   end
 
   defp state_for_lv(state) do
-    # return some subset of the state from the GenServer
+    # return some subset of the state from the GenServer to be consumed by mascot_game_live
     %{
       current_question_school: state.current_question.school,
       users: state.users,
@@ -133,7 +131,6 @@ defmodule Zorcle.MascotGame do
 
   # client
   def join_game(name) do
-    # name
     GenServer.call(__MODULE__, {:user_join, name})
   end
 
