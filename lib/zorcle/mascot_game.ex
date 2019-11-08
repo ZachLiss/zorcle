@@ -3,8 +3,6 @@ defmodule Zorcle.MascotGame do
 
   alias Zorcle.MascotGame.Questions
 
-  # TODO change into a genserver
-
   def start_link(_) do
     IO.puts("STARTING THE GAME GenServer")
     GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
@@ -20,11 +18,12 @@ defmodule Zorcle.MascotGame do
       game_status: :not_started,
       # we'll think about how to represent the used questions state
       used_questions: %{},
-      current_question: %{school: nil}
+      current_question: %{school: nil},
+      winning_user: ""
     }
   end
 
-  def handle_call({:user_join, user_name}, {pid, _ref}, %{users: users} = state) do
+  def handle_call({:user_join, user_name}, {_pid, _ref}, %{users: users} = state) do
     IO.puts("#{user_name} is joining the game")
     # calling Phoennix.PubSub.subscribe/3 with a pid is deprecated now
     # Phoenix.PubSub.subscribe(Zorcle.InternalPubSub, pid, "game")
@@ -54,21 +53,18 @@ defmodule Zorcle.MascotGame do
       state
       |> Map.put(:game_status, :started)
       |> Map.put(:current_question, get_random_question())
-
-    # add this to pipeline?
-    broadcast_updated_game_state(state)
+      |> broadcast_updated_game_state
 
     {:reply, :ok, state}
   end
 
   def handle_call({:end_game}, _pid, state) do
-    users_with_no_score = Map.new(state.users, fn {k, v} -> {k, 0} end)
+    users_with_no_score = Map.new(state.users, fn {k, _v} -> {k, 0} end)
 
     state =
-      initial_state()
+      initial_state
       |> Map.put(:users, users_with_no_score)
-
-    broadcast_updated_game_state(state)
+      |> broadcast_updated_game_state
 
     {:reply, :ok, state}
   end
@@ -91,10 +87,9 @@ defmodule Zorcle.MascotGame do
         state =
           state
           |> increase_score_for_user(user_name)
+          |> check_for_winning_user(user_name)
           |> Map.put(:current_question, get_random_question())
-
-        # add this to pipeline? |> broadcast_updated_game_state() or |> broadcast_updated_game_state ?
-        broadcast_updated_game_state(state)
+          |> broadcast_updated_game_state
 
         {:reply, :ok, state}
 
@@ -104,12 +99,19 @@ defmodule Zorcle.MascotGame do
   end
 
   defp increase_score_for_user(state, user_name) do
-    # TODO can this be improved by refactoring?
     users =
       state.users
       |> Map.put(user_name, state.users[user_name] + 1)
 
     Map.put(state, :users, users)
+  end
+
+  defp check_for_winning_user(%{users: users} = state, user_name) do
+    if Map.get(users, user_name) >= 3 do
+      Map.put(state, :winning_user, user_name)
+    else
+      state
+    end
   end
 
   defp broadcast_updated_game_state(state) do
@@ -118,6 +120,8 @@ defmodule Zorcle.MascotGame do
       "game",
       {:update_game_state, state_for_lv(state)}
     )
+
+    state
   end
 
   defp state_for_lv(state) do
@@ -125,7 +129,8 @@ defmodule Zorcle.MascotGame do
     %{
       current_question_school: state.current_question.school,
       users: state.users,
-      game_status: state.game_status
+      game_status: state.game_status,
+      winning_user: state.winning_user
     }
   end
 
@@ -159,6 +164,6 @@ defmodule Zorcle.MascotGame do
 
   def check_answer(guess, user) do
     IO.puts("User: #{user.name}")
-    is_correct = GenServer.call(__MODULE__, {:answer_question, guess, user.name})
+    GenServer.call(__MODULE__, {:answer_question, guess, user.name})
   end
 end

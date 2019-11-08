@@ -1,6 +1,5 @@
 <!-- what mode do you use while editing .leex files? -->
 <h1>Welcome, <%= @user.name %>, to the Mascot Game</h1>
-<!-- TODO this whole form should communicate through lv -->
 <section id="mascot-game">
 	<div>
 		<button phx-click="toggle-game">
@@ -19,23 +18,27 @@
 			<% end %>
 		</div>
 
+	<%= if @game_state.winning_user != "" do %>
+		<%= @game_state.winning_user %> has won!
+	<% else %>
 		<section>
 			<div>
 				Score: <span id="score-value"><%= @user_score %></span>
 			</div>
-			<%= f = form_for :game_form, "#", [phx_submit: :answer_question] %>
+			<%= f = form_for :game_form, "#", [phx_submit: :answer_question, phx_change: :update_mascot_guess] %>
 				<div>
 					School: <%= @game_state.current_question_school %>
 				</div>
 
 				<div>
-					<!-- how would you clear this input after the form is submitted? -->
-					Mascot: <%= text_input f, :mascot %>
+					Mascot: <%= text_input f, :mascot, value: @mascot_guess %>
 					<span id="feedback"></span>
 				</div>
 
 				<%= submit "Submit" %>
 			</form>
 		</section>
+	<% end %>
+
 	<% end %>
 </section>

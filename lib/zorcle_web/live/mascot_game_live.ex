@@ -28,7 +28,8 @@ defmodule ZorcleWeb.MascotGameLive do
       game_state: %{
         game_status: :not_started,
         current_question_school: "",
-        users: []
+        users: [],
+        winning_user: ""
       }
     ]
 
@@ -59,15 +60,22 @@ defmodule ZorcleWeb.MascotGameLive do
   end
 
   def handle_event("answer_question", %{"game_form" => %{"mascot" => guess}}, socket) do
+    IO.puts("ANSWER QUESTION")
+
     case MascotGame.check_answer(guess, socket.assigns.user) do
-      true ->
+      :ok ->
         # noop for now, we'll add correct/incorrect UI feedback later
         # also... what might be the best way to provide this feedback?
-        {:noreply, socket}
+        # reset guess for correct answers
+        {:noreply, assign(socket, :mascot_guess, "")}
 
       _ ->
         # TODO if incorrect pass back wrong answer to to provide feedback
         {:noreply, socket}
     end
+  end
+
+  def handle_event("update_mascot_guess", %{"game_form" => %{"mascot" => guess}}, socket) do
+    {:noreply, assign(socket, :mascot_guess, guess)}
   end
 end
