@@ -10,8 +10,8 @@ defmodule ZorcleWeb.MascotGameLive do
   # called when the liveview is connected to
   def mount(%{user: user}, socket) do
     if connected?(socket) do
-      Phoenix.PubSub.subscribe(Zorcle.InternalPubSub, "game")
-      MascotGame.join_game(user.name)
+      # Phoenix.PubSub.subscribe(Zorcle.InternalPubSub, "game")
+      # MascotGame.join_game(user.name)
     end
 
     # QUESTION: the template explodes whenever one of the assigns keys
@@ -44,6 +44,13 @@ defmodule ZorcleWeb.MascotGameLive do
   # Consume message from pubsub
   def handle_info({:update_game_state, game_state}, socket) do
     {:noreply, assign(socket, :game_state, game_state)}
+  end
+
+  def handle_event("join_game", _, socket) do
+    if connected?(socket) do
+      Phoenix.PubSub.subscribe(Zorcle.InternalPubSub, "game")
+      MascotGame.join_game(socket.assigns.user.name)
+    end
   end
 
   def handle_event("toggle-game", _, socket) do

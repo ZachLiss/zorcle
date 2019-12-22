@@ -25,8 +25,6 @@ defmodule Zorcle.MascotGame do
 
   def handle_call({:user_join, user_name}, {_pid, _ref}, %{users: users} = state) do
     IO.puts("#{user_name} is joining the game")
-    # calling Phoennix.PubSub.subscribe/3 with a pid is deprecated now
-    # Phoenix.PubSub.subscribe(Zorcle.InternalPubSub, pid, "game")
     users = Map.put(users, user_name, 0)
     state = Map.put(state, :users, users)
 
@@ -62,7 +60,7 @@ defmodule Zorcle.MascotGame do
     users_with_no_score = Map.new(state.users, fn {k, _v} -> {k, 0} end)
 
     state =
-      initial_state
+      initial_state()
       |> Map.put(:users, users_with_no_score)
       |> broadcast_updated_game_state
 
