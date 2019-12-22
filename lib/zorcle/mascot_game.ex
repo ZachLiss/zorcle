@@ -94,4 +94,8 @@ defmodule Zorcle.MascotGame do
   def end_game() do
     GenServer.call(__MODULE__, {:end_game})
   end
+
+  def check_answer(guess, user) do
+    GenServer.call(__MODULE__, {:answer_question, guess, user.name})
+  end
 end
