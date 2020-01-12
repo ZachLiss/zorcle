@@ -1,5 +1,6 @@
 defmodule Zorcle.MascotGame.Game do
   defstruct users: %{},
+            name: "",
             game_status: :not_started,
             current_question: %{school: nil},
             winning_user: ""
@@ -9,21 +10,20 @@ defmodule Zorcle.MascotGame.Game do
   alias __MODULE__
   alias Zorcle.MascotGame.Questions
 
-  def new() do
-    %Game{}
+  def new(name) do
+    %Game{
+      name: name
+    }
   end
 
   def add_user(%Game{users: users} = game, user_name) do
-    case game.game_status do
-      :not_started ->
+    case Map.has_key?(users, user_name) do
+      true ->
+        {:ok, game}
+
+      false ->
         updated_users = Map.put(users, user_name, 0)
         {:ok, %Game{game | users: updated_users}}
-
-      :started ->
-        {:error, :already_started}
-
-      _ ->
-        {:error, :game_ended}
     end
   end
 

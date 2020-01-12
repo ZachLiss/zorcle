@@ -1,2 +1,2 @@
-this is apparently a game page with the id <%= @mascot_game_id %>
-<%= live_render(@conn, ZorcleWeb.MascotGameLive, session: %{user: @user}, game_id: @mascot_game_id) %>
+<%= link "Back to Game Selection", to: Routes.mascot_game_path(@conn, :new) %>
+<%= live_render(@conn, ZorcleWeb.MascotGameLive, session: %{user: @user, mascot_game_name: @mascot_game_id}) %>

@@ -21,11 +21,11 @@ defmodule Zorcle.MascotGame do
 
   def init(mascot_game_name) do
     IO.puts("Starting mascot_game server for MascotGame: #{mascot_game_name}")
-    {:ok, initial_state()}
+    {:ok, initial_state(mascot_game_name)}
   end
 
-  defp initial_state do
-    Game.new()
+  defp initial_state(name) do
+    Game.new(name)
   end
 
   def handle_call({:user_join, user_name}, {_pid, _ref}, %{users: users} = state) do
@@ -34,11 +34,12 @@ defmodule Zorcle.MascotGame do
     case Game.add_user(state, user_name) do
       {:ok, game} ->
         broadcast_updated_game_state(game)
-        {:reply, :ok, game}
+        {:reply, game, game}
 
-      {:error, _} ->
+      {:error, reason} ->
         # silently fail for now
-        {:reply, :ok, state}
+        # user with this name already added to the game, so we just return the current game state
+        {:reply, state, state}
     end
   end
 
@@ -57,7 +58,8 @@ defmodule Zorcle.MascotGame do
 
     {:ok, game} = Game.end_game(state)
     broadcast_updated_game_state(game)
-    {:reply, :ok, game}
+    # {:reply, :ok, game}
+    {:stop, :normal, game}
   end
 
   def handle_call({:answer_question, guess, user_name}, _pid, state) do
@@ -76,23 +78,15 @@ defmodule Zorcle.MascotGame do
   defp broadcast_updated_game_state(state) do
     Phoenix.PubSub.broadcast(
       Zorcle.InternalPubSub,
-      "game",
-      {:update_game_state, state_for_lv(state)}
+      mascot_game_topic(state.name),
+      {:update_game_state, state}
     )
 
     state
   end
 
   # move this to the mascot game live module?
-  defp state_for_lv(state) do
-    # return some subset of the state from the GenServer to be consumed by mascot_game_live
-    %{
-      current_question_school: state.current_question.school,
-      users: state.users,
-      game_status: state.game_status,
-      winning_user: state.winning_user
-    }
-  end
+  # yup, this module should have no notion of a LiveView consuming anything that it does
 
   # client
   def join_game(mascot_game, name) do
@@ -109,5 +103,9 @@ defmodule Zorcle.MascotGame do
 
   def check_answer(mascot_game, guess, user) do
     GenServer.call(mascot_game, {:answer_question, guess, user.name})
+  end
+
+  def mascot_game_topic(name) do
+    "MascotGame:#{name}"
   end
 end

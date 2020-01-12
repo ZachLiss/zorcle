@@ -2,12 +2,11 @@
 <h1>Welcome, <%= @user.name %>, to the Mascot Game</h1>
 <section id="mascot-game">
 	<div>
-		<button phx-click="toggle-game">
-			<%= case(@game_state.game_status != :not_started) do %>
-					<% true -> %> End Game
-					<% false -> %> Start Game
-			<% end %>
-		</button>
+		<%= if(@game_state.game_status == :not_started) do %>
+			<button phx-click="toggle-game">
+				Start Game
+			</button>
+		<% end %>
 	</div>
 	<%= if @game_state.current_question_school do %>
 		<div class="scoreboard">
