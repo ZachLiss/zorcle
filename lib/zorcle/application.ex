@@ -14,7 +14,11 @@ defmodule Zorcle.Application do
       ZorcleWeb.Endpoint,
       Zorcle.MagicLinks,
       # Starts a worker by calling: Zorcle.Worker.start_link(arg)
-      {Zorcle.MascotGame, :ok},
+      # dont start a mascot game by default anymore
+      # we want to start a game GenServer after the first user
+      # joins a  game route
+      # {Zorcle.MascotGame, :ok},
+      {Zorcle.MascotGameManager, :ok},
       {Phoenix.PubSub.PG2, name: Zorcle.InternalPubSub}
     ]
 

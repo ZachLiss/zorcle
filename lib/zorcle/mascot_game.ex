@@ -3,12 +3,24 @@ defmodule Zorcle.MascotGame do
 
   alias Zorcle.MascotGame.{Game, Questions}
 
-  def start_link(_) do
+  def start_link(mascot_game_name) do
     IO.puts("STARTING THE GAME GenServer")
-    GenServer.start_link(__MODULE__, :ok, name: __MODULE__)
+    GenServer.start_link(__MODULE__, mascot_game_name, name: global_name(mascot_game_name))
   end
 
-  def init(_) do
+  defp global_name(name) do
+    {:global, {__MODULE__, name}}
+  end
+
+  def whereis(name) do
+    case :global.whereis_name({__MODULE__, name}) do
+      :undefined -> nil
+      pid -> pid
+    end
+  end
+
+  def init(mascot_game_name) do
+    IO.puts("Starting mascot_game server for MascotGame: #{mascot_game_name}")
     {:ok, initial_state()}
   end
 
@@ -83,19 +95,19 @@ defmodule Zorcle.MascotGame do
   end
 
   # client
-  def join_game(name) do
-    GenServer.call(__MODULE__, {:user_join, name})
+  def join_game(mascot_game, name) do
+    GenServer.call(mascot_game, {:user_join, name})
   end
 
-  def start_game() do
-    GenServer.call(__MODULE__, {:start_game})
+  def start_game(mascot_game) do
+    GenServer.call(mascot_game, {:start_game})
   end
 
-  def end_game() do
-    GenServer.call(__MODULE__, {:end_game})
+  def end_game(mascot_game) do
+    GenServer.call(mascot_game, {:end_game})
   end
 
-  def check_answer(guess, user) do
-    GenServer.call(__MODULE__, {:answer_question, guess, user.name})
+  def check_answer(mascot_game, guess, user) do
+    GenServer.call(mascot_game, {:answer_question, guess, user.name})
   end
 end
