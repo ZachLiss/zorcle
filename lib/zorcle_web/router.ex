@@ -8,7 +8,7 @@ defmodule ZorcleWeb.Router do
     plug(Phoenix.LiveView.Flash)
     plug(:protect_from_forgery)
     plug(:put_secure_browser_headers)
-    plug(ZorcleWeb.Auth)
+    # plug(ZorcleWeb.Auth)
   end
 
   pipeline :api do

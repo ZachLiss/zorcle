@@ -9,7 +9,7 @@ defmodule ZorcleWeb.SessionController do
     conn
     |> put_session(:user, %{name: name})
     |> put_flash(:info, "Welcome, #{name}")
-    |> render("new.html")
+    |> redirect(to: Routes.mascot_game_path(conn, :new))
   end
 
   def delete(conn, _params) do
