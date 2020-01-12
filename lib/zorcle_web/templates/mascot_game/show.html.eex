@@ -1,0 +1,2 @@
+this is apparently a game page with the id <%= @mascot_game_id %>
+<%= live_render(@conn, ZorcleWeb.MascotGameLive, session: %{user: @user}, game_id: @mascot_game_id) %>

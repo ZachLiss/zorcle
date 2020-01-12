@@ -4,28 +4,31 @@ defmodule ZorcleWeb.PageController do
   def index(conn, _params) do
     case get_session(conn, :user) do
       nil ->
-        # session data should be minimal
-        live_render(conn, ZorcleWeb.ConnectLive, session: %{})
+        # we dont have a user so lets render the select user route
+        redirect(conn, to: Routes.session_path(conn, :new))
 
       user ->
-        live_render(conn, ZorcleWeb.MascotGameLive, session: %{user: user})
+        # we have a user so let's head to the join a game route
+        redirect(conn, to: Routes.mascot_game_path(conn, :new))
     end
   end
 
-  def add_session(conn, %{"token" => token}) do
-    case Zorcle.MagicLinks.verify_token(token) do
-      {:ok, user} ->
-        put_session(conn, :user, user)
+  """
+   def add_session(conn, %{"token" => token}) do
+     case Zorcle.MagicLinks.verify_token(token) do
+       {:ok, user} ->
+         put_session(conn, :user, user)
 
-      {:error, _} ->
-        conn
-    end
-    |> redirect(to: "/")
-  end
+       {:error, _} ->
+         conn
+     end
+     |> redirect(to: "/")
+   end
 
-  def drop_session(conn, _) do
-    conn
-    |> delete_session(:user)
-    |> redirect(to: "/")
-  end
+   def drop_session(conn, _) do
+     conn
+     |> delete_session(:user)
+     |> redirect(to: "/")
+   end
+  """
 end

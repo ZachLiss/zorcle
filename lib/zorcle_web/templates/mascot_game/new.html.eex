@@ -1,0 +1,9 @@
+<h1>Join Game</h1>
+
+<%= form_for @conn, Routes.mascot_game_path(@conn, :create), fn f -> %>
+	<%= text_input f, :mascot_game_name %>
+
+	<div>
+		<%= submit "Submit" %>
+	</div>
+<% end %>

@@ -1,0 +1,7 @@
+<!-- idk if this form/template file is used anywhere... -->
+<%= f = form_for :user_form, "#", [phx_submit: :submit_user_form] %>
+	<div>
+		Name: <%= text_input f, :user_name %>
+	</div>
+	<%= submit "Submit" %>
+</form>

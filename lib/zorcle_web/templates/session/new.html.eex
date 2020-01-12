@@ -1,0 +1,9 @@
+<h1>Enter Name</h1>
+
+<%= form_for @conn, Routes.session_path(@conn, :create), [as: :user], fn f -> %>
+	<%= text_input f, :name %>
+
+	<div>
+		<%= submit "Submit" %>
+	</div>
+<% end %>
