@@ -34,17 +34,9 @@ defmodule Zorcle.MascotGame do
   @impl GenServer
   def handle_call({:user_join, user_name}, {_pid, _ref}, %{users: users} = state) do
     IO.puts("#{user_name} is joining the game")
-
-    case Game.add_user(state, user_name) do
-      {:ok, game} ->
-        broadcast_updated_game_state(game)
-        {:reply, game, game, @expiry_idle_timeout}
-
-      {:error, reason} ->
-        # silently fail for now
-        # user with this name already added to the game, so we just return the current game state
-        {:reply, state, state, @expiry_idle_timeout}
-    end
+    game = Game.add_user(state, user_name)
+    broadcast_updated_game_state(game)
+    {:reply, game, game, @expiry_idle_timeout}
   end
 
   # how to handle "pushing" the updated state back to the LV? is that a thing we should do?
@@ -53,7 +45,7 @@ defmodule Zorcle.MascotGame do
   def handle_call({:start_game}, _pid, state) do
     IO.puts("Starting game")
 
-    {:ok, game} = Game.start_game(state)
+    game = Game.start_game(state)
     broadcast_updated_game_state(game)
     {:reply, :ok, game, @expiry_idle_timeout}
   end
@@ -62,7 +54,7 @@ defmodule Zorcle.MascotGame do
   def handle_call({:end_game}, _pid, state) do
     IO.puts("Ending game")
 
-    {:ok, game} = Game.end_game(state)
+    game = Game.end_game(state)
     broadcast_updated_game_state(game)
     # {:reply, :ok, game}
     {:stop, :normal, game}
