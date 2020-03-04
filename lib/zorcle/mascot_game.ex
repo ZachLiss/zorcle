@@ -1,7 +1,7 @@
 defmodule Zorcle.MascotGame do
   use GenServer, restart: :temporary
 
-  alias Zorcle.MascotGame.{Game, Questions}
+  alias Zorcle.MascotGame.{Game, Response, Questions}
 
   @expiry_idle_timeout :timer.minutes(3)
 
@@ -34,17 +34,9 @@ defmodule Zorcle.MascotGame do
   @impl GenServer
   def handle_call({:user_join, user_name}, {_pid, _ref}, %{users: users} = state) do
     IO.puts("#{user_name} is joining the game")
-
-    case Game.add_user(state, user_name) do
-      {:ok, game} ->
-        broadcast_updated_game_state(game)
-        {:reply, game, game, @expiry_idle_timeout}
-
-      {:error, reason} ->
-        # silently fail for now
-        # user with this name already added to the game, so we just return the current game state
-        {:reply, state, state, @expiry_idle_timeout}
-    end
+    game = Game.add_user(state, user_name)
+    broadcast_updated_game_state(game)
+    {:reply, game, game, @expiry_idle_timeout}
   end
 
   # how to handle "pushing" the updated state back to the LV? is that a thing we should do?
@@ -53,7 +45,7 @@ defmodule Zorcle.MascotGame do
   def handle_call({:start_game}, _pid, state) do
     IO.puts("Starting game")
 
-    {:ok, game} = Game.start_game(state)
+    game = Game.start_game(state)
     broadcast_updated_game_state(game)
     {:reply, :ok, game, @expiry_idle_timeout}
   end
@@ -62,7 +54,7 @@ defmodule Zorcle.MascotGame do
   def handle_call({:end_game}, _pid, state) do
     IO.puts("Ending game")
 
-    {:ok, game} = Game.end_game(state)
+    game = Game.end_game(state)
     broadcast_updated_game_state(game)
     # {:reply, :ok, game}
     {:stop, :normal, game}
@@ -75,17 +67,22 @@ defmodule Zorcle.MascotGame do
   end
 
   @impl GenServer
-  def handle_call({:answer_question, guess, user_name}, _pid, state) do
+  def handle_call({:answer_question, guess, user_name}, _pid, game) do
     IO.puts("Correct Answer: #{state.current_question.mascot}")
 
-    case(Game.answer_question(state, guess, user_name)) do
-      {:ok, game} ->
-        broadcast_updated_game_state(game)
-        {:reply, :ok, game, @expiry_idle_timeout}
+    Game.answer_question(game, guess, user_name)
+    |> return_and_maybe_broacast_updated_game_state()
+  end
 
-      _ ->
-        {:reply, :incorrect, state, @expiry_idle_timeout}
-    end
+  defp return_and_maybe_broacast_updated_game_state(
+         %Game{last_response: %Response{correct: true} = response} = game
+       ) do
+    broadcast_updated_game_state(game)
+    {:reply, :ok, game, @expiry_idle_timeout}
+  end
+
+  defp return_and_maybe_broacast_updated_game_state(game) do
+    {:reply, :incorrect, game, @expiry_idle_timeout}
   end
 
   defp broadcast_updated_game_state(state) do
