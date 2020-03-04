@@ -1,7 +1,7 @@
 defmodule Zorcle.MascotGame do
   use GenServer, restart: :temporary
 
-  alias Zorcle.MascotGame.{Game, Questions}
+  alias Zorcle.MascotGame.{Game, Response, Questions}
 
   @expiry_idle_timeout :timer.minutes(3)
 
@@ -67,17 +67,22 @@ defmodule Zorcle.MascotGame do
   end
 
   @impl GenServer
-  def handle_call({:answer_question, guess, user_name}, _pid, state) do
+  def handle_call({:answer_question, guess, user_name}, _pid, game) do
     IO.puts("Correct Answer: #{state.current_question.mascot}")
 
-    case(Game.answer_question(state, guess, user_name)) do
-      {:ok, game} ->
-        broadcast_updated_game_state(game)
-        {:reply, :ok, game, @expiry_idle_timeout}
+    Game.answer_question(game, guess, user_name)
+    |> return_and_maybe_broacast_updated_game_state()
+  end
 
-      _ ->
-        {:reply, :incorrect, state, @expiry_idle_timeout}
-    end
+  defp return_and_maybe_broacast_updated_game_state(
+         %Game{last_response: %Response{correct: true} = response} = game
+       ) do
+    broadcast_updated_game_state(game)
+    {:reply, :ok, game, @expiry_idle_timeout}
+  end
+
+  defp return_and_maybe_broacast_updated_game_state(game) do
+    {:reply, :incorrect, game, @expiry_idle_timeout}
   end
 
   defp broadcast_updated_game_state(state) do

@@ -3,6 +3,7 @@ defmodule Zorcle.MascotGame.Game do
             name: "",
             game_status: :not_started,
             current_question: %{school: nil},
+            last_response: nil,
             winning_user: ""
 
   @winning_score 3
@@ -51,7 +52,10 @@ defmodule Zorcle.MascotGame.Game do
   def answer_question(%Game{current_question: current_question} = game, guess, user_name)
       when is_binary(guess) do
     response = Response.new(game, guess, user_name)
-    answer_question(game, response, user_name)
+
+    game
+    |> add_response_to_game(response)
+    |> answer_question(response, user_name)
   end
 
   def answer_question(game, %Response{correct: true} = response, user_name) do
@@ -61,11 +65,15 @@ defmodule Zorcle.MascotGame.Game do
       |> check_for_winning_user(user_name)
       |> select_question()
 
-    {:ok, game}
+    game
   end
 
-  def answer_question(_game, %Response{correct: false} = response, _user_name) do
-    {:error, :incorrect}
+  def answer_question(game, %Response{correct: false} = response, _user_name) do
+    game
+  end
+
+  defp add_response_to_game(game, response) do
+    Map.put(game, :last_response, response)
   end
 
   defp increase_score_for_user(%Game{} = game, user_name) do
